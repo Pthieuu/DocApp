@@ -62,15 +62,14 @@ class DioProvider {
     }
   }
 
-
-  Future<dynamic> bookAppointment(String date, String day, String time,
-      int doctor, String token) async {
+  Future<dynamic> bookAppointment(
+      String date, String day, String time, int doctor, String token) async {
     try {
       var dio = Dio();
-      dio.options.headers['content-Type'] = 'application/json';
-      dio.options.headers['Authorization'] = 'Bearer $token'; //Thêm token vào header
+      dio.options.headers['Authorization'] = 'Bearer $token'; // Add token to header
+      dio.options.headers['content-Type'] = 'application/json'; // Specify content type as JSON
 
-      var response = await dio.post('http://10.0.2.2:8000/api/book',
+      var response = await dio.post('http://10.0.2.2:8000/api/booking',
           data: {
             'date': date,
             'day': day,
@@ -78,15 +77,118 @@ class DioProvider {
             'doctor_id': doctor
           }
       );
-      if (response.statusCode == 200 && response.data != 'data') {
-        return response.statusCode;
+
+
+      print(response.data);
+      print(response.realUri);
+      print(response.statusCode);
+
+      if (response.statusCode == 200 && response.data != '') {
+        return response.data; // Return the response data if the booking is successful
       } else {
-        return 'Error';
+        return 'Error: ${response.statusCode} - ${response.data}';
       }
     } catch (error) {
-      return error;
+      return 'Error: $error';
     }
   }
 
+  // Future<dynamic> getAppointments(String token) async {
+  //   try {
+  //     var dio = Dio();
+  //     dio.options.headers['Authorization'] = 'Bearer $token'; // Thêm token vào header
+  //     dio.options.headers['content-Type'] = 'application/json'; // Chỉ định loại nội dung là JSON
+  //
+  //     var response = await dio.get(
+  //       'http://10.0.2.2:8000/api/appointments',
+  //     );
+  //
+  //     print('Raw response: ${response.data}'); // In ra phản hồi thô để kiểm tra
+  //
+  //     if (response.statusCode == 200 && response.data != '') {
+  //       if (response.data is String) {
+  //         // Nếu phản hồi là chuỗi, cố gắng chuyển đổi thành JSON
+  //         try {
+  //           var jsonData = jsonDecode(response.data);
+  //           return jsonData;
+  //         } catch (e) {
+  //           return 'Error parsing JSON: $e';
+  //         }
+  //       } else {
+  //         // Nếu phản hồi đã là JSON hợp lệ
+  //         return response.data;
+  //       }
+  //     } else {
+  //       return 'Error: ${response.statusCode} - ${response.data}';
+  //     }
+  //   } catch (error) {
+  //     return 'Error: $error';
+  //   }
+  // }
 
-}
+
+
+
+
+  Future<dynamic> getAppointments(String token) async {
+  try {
+    final Dio _dio = Dio();
+  _dio.options.headers['Authorization'] = 'Bearer $token'; // Thêm token vào header
+  _dio.options.headers['content-Type'] = 'application/json'; // Chỉ định loại nội dung là JSON
+
+  var response = await _dio.get(
+  'http://10.0.2.2:8000/api/appointments',
+  );
+
+  print('Raw response: ${response.data}'); // In ra phản hồi thô để kiểm tra
+
+  if (response.statusCode == 200 && response.data != '') {
+  if (response.data is List || response.data is Map<String, dynamic>) {
+  return response.data;
+  } else {
+  return 'Unexpected format: ${response.data}';
+  }
+  } else {
+  return 'Error: ${response.statusCode} - ${response.data}';
+  }
+  } catch (error) {
+  return 'Error: $error';
+  }
+  }
+
+  Future<dynamic> stroreReviews(
+      String reviews, double ratings, int id, int doctor, String token) async {
+    try {
+      var dio = Dio();
+      dio.options.headers['Authorization'] = 'Bearer $token'; // Add token to header
+      dio.options.headers['content-Type'] = 'application/json'; // Specify content type as JSON
+
+      var response = await dio.post('http://10.0.2.2:8000/api/reviews',
+          data: {
+            'ratings': ratings,
+            'reviews': reviews,
+            'appointment_id': id,
+            'doctor_id': doctor
+          }
+      );
+
+
+      print(response.data);
+      print(response.realUri);
+      print(response.statusCode);
+
+      if (response.statusCode == 200 && response.data != '') {
+        return response.data; // Return the response data if the booking is successful
+      } else {
+        return 'Error: ${response.statusCode} - ${response.data}';
+      }
+    } catch (error) {
+      return 'Error: $error';
+    }
+  }
+  }
+
+
+
+
+

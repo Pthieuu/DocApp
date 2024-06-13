@@ -141,9 +141,10 @@ class _BookingPageState extends State<BookingPage> {
 
                   final booking = await DioProvider()
                       .bookAppointment(getDate, getDay, getTime, doctor['doctor_id'], token!);
-                  if(booking == 200){
+                  if (booking == 200) {
                     MyApp.navigatorKey.currentState!.pushNamed('success_booking');
-
+                  } else {
+                    print('Failed to book appointment: $booking');
                   }
                 },
                 disable: _timeSelected && _dateSelected ? false : true,
